@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--namespace 변경!!!-->
+<mapper namespace="com.zerobase.fastlms.course.mapper.TakeCourseMapper">
+
+    <!--공통된 코드 상속받아 쓰기-->
+    <sql id="selectListWhere">
+
+    </sql>
+
+    <!--parameterType 변경!!!-->
+    <!--select는 parameterType 안 중요해서 생략가능-->
+    <!--테이블 변경해야함-->
+    <select id="selectListCount" resultType="long">
+        select count(*)
+        from take_course
+        where 1 = 1
+        <include refid="selectListWhere"/>
+    </select>
+
+    <!--parameterType, resultType 변경!!!-->
+    <select id="selectList" resultType="com.zerobase.fastlms.course.dto.TakeCourseDto">
+        select tc.*
+            , c.subject
+            , m.user_name
+            , m.phone
+        from take_course tc
+            join course c on tc.course_id = c.id
+            join member m on tc.user_id = m.user_id
+        where 1 = 1
+            <include refid="selectListWhere"/>
+        order by reg_dt desc
+
+        limit #{pageStart}, #{pageEnd}
+    </select>
+
+    <!--userId에 해당하는 수강신청 정보-->
+    <select id="selectListMyCourse" resultType="com.zerobase.fastlms.course.dto.TakeCourseDto">
+        select tc.*
+            , c.subject
+        from take_course tc
+            join course c on tc.course_id = c.id
+        where tc.user_id = #{userId} <!--take_course에 있는 userId-->
+        order by reg_dt desc
+
+    </select>
+
+</mapper>

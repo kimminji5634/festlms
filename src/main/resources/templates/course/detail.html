@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <meta charset="UTF-8">
+        <title> 강좌 상세 페이지 </title>
+        <style>
+            span.price {
+                text-decoration: line-through;
+            }
+        </style>
+
+        <!--서버로 데이터 보낼건데 보내려면 ajax 라이브러리인 axios를 가져와야 한다
+        구글에 axios download - github - Using jsDelivr CDN; 코드 가져오기-->
+        <!--** ajax 경우는 기본적으로 f12 개발자도구에서 네트워크 탭을 참고해 보면 api 호출되는지 볼 수 있고 클릭하면 상세히 나온다-->
+        <script src="https://cdn.jsdelivr.net/npm/axios@1.1.2/dist/axios.min.js"></script>
+        <!--admin/course/list.html에 있는 jQuery 코드를 가져옴-->
+        <script src="https://code.jquery.com/jquery-3.6.1.min.js" integrity="sha256-o88AwQnZB+VDvE9tvIXrMQaPlFFSUTR+nldQm1LuPXQ=" crossOrigin="anonymous"></script>
+        <script>
+            $(function () {
+
+                $('#submitForm').on('submit', function() {
+
+                    if (!confirm('수강 신청을 하시겠습니까?')) {
+                        return false;
+                    }
+
+                    // 현재 submit이라 this로 잡을 수 있음
+                    var $thisForm = $(this);
+
+                    var url = '/api/course/req.api'; /*이 url을 course/controller/ApiCourseController 에 생성*/
+                    // json 형태로
+                    var parameter = {
+                        // 아래의 submitForm 태그의 id값 던짐
+                        courseId: $thisForm.find('input[name=id]').val()
+                    };
+
+                    // alert('1'); 수강신청 버튼 누르면 1이 뜸
+                    /*post는 url로 parameter를 전송*/
+                    axios .post(url, parameter).then(function(response) {
+                        console.log(response);
+                        console.log(response.data);
+
+                        // 문제가 있을 수 있으니 {} 객체로 싸줌
+                        response.data = response.data || {};
+                        response.data.header = response.data.header || {};
+
+                        if (!response.data.header.result) {
+                            alert(response.data.header.message);
+                            return false;
+                        }
+
+                        // 정상적일 때
+                        alert('강좌가 신청되었습니다.');
+                        location.href = '/';
+
+                    }).catch(function (err) {
+                        console.log(err);
+                    });
+
+                    return false;
+                });
+
+            });
+        </script>
+    </head>
+    <body>
+        <h1> 강좌 상세 정보</h1>
+        <div th:replace="/fragments/layout.html :: fragment-body-menu"></div>
+        <!--<div th:text="${detail}">  전체 내용이 화면에 잘 나옴-->
+        <div>
+            <h2>
+                강좌명 : <span th:text="${detail.subject}">강좌</span>
+            </h2>
+            <div th:utext="${detail.contents}"></div> <!--utext를 해줘야 여러줄이어도 태그가 안나온다-->
+            <div>
+                <p>가격 : <span th:text="${detail.price}">0</span> </p>
+                <p>할인가격 : <span th:text="${detail.salePrice}">0</span> </p>
+            </div>
+
+            <div>
+                <form id="submitForm" method="post"> <!--이 post 메소드에 대해서 위에서 구현해주기 위해 id 넣음-->
+                <input type="hidden" name="id" th:value="${detail.id}"/> <!--강좌 id만 서버로 보내면 됨-->
+                <button type="submit">수강신청</button>
+                <a href="/course">강좌목록</a>
+                </form>
+            </div>
+        </div>
+
+    </body>
+</html>

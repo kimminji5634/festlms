@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--namespace 변경!!!-->
+<mapper namespace="com.zerobase.fastlms.course.mapper.CourseMapper">
+
+    <!--공통된 코드 상속받아 쓰기-->
+    <sql id="selectListWhere">
+        <if test="searchType != null and searchValue != null">
+            <choose>
+                <when test="searchType == 'userId'">
+                    and user_id like concat('%', #{searchValue}, '%')
+                </when>
+                <when test="searchType == 'userName'">
+                    and user_name like concat('%', #{searchValue}, '%')
+                </when>
+                <when test="searchType == 'phone'">
+                    and phone like concat('%', #{searchValue}, '%')
+                </when>
+                <otherwise>
+                    and
+                    ( user_id like concat('%', #{searchValue}, '%')
+                    or user_name like concat('%', #{searchValue}, '%')
+                    or phone like concat('%', #{searchValue}, '%') )
+                </otherwise>
+            </choose>
+        </if>
+    </sql>
+
+    <!--parameterType 변경!!!-->
+    <!--select는 parameterType 안 중요해서 생략가능-->
+    <!--테이블 변경해야함-->
+    <select id="selectListCount" resultType="long">
+        select count(*)
+        from course
+        where 1 = 1
+        <include refid="selectListWhere"/>
+    </select>
+
+    <!--parameterType, resultType 변경!!!-->
+    <select id="selectList" resultType="com.zerobase.fastlms.course.dto.CourseDto">
+
+        select *
+        from course
+        where 1 = 1
+        <include refid="selectListWhere"/>
+        order by reg_dt desc
+        limit #{pageStart}, #{pageEnd}
+    </select>
+
+</mapper>

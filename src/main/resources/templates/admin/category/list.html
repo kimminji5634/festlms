@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<!-- suggest 추천해주는걸 사용하기 위해 네임 스페이스 추가해야 함 -->
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>관리자 화면</title>
+  <style> /*.은 클래스를 말함*/
+  .list table {
+    width: 100%;
+    border-collapse: collapse; /*간격 없앰*/
+  }
+  .list table th, .list table td {
+    border: solid 1px #000;
+  }
+  p.nothing {
+    text-align: center;
+    padding: 100px;
+  }
+  .inline-div {
+    display: inline-block;
+  }
+  </style>
+
+  <script src="https://code.jquery.com/jquery-3.6.1.min.js" integrity="sha256-o88AwQnZB+VDvE9tvIXrMQaPlFFSUTR+nldQm1LuPXQ=" crossorigin="anonymous"></script>
+  <script>
+    $(document).ready(function () {
+
+        // 삭제 버튼 클릭시 기능함
+        $('form[name=deleteForm]').on('submit', function () {
+
+            if(!confirm('카테고리를 삭제하시겠습니까')) { // 취소를 누른 경우
+              return false;
+            }
+
+
+        });
+
+        /*update-button 클릭시 맨 아래 작성한 updateForm 실행되도록 => 자바스크립트에서 작성해야 함*/
+          $('button.update-button').on('click', function () {
+
+            // alert('1'); => 수정버튼 누르면 1 뜬다
+
+            if (!confirm('카테고리를 수정하시겠습니까?')) {
+              return false;
+            }
+
+            // this는 현재 버튼을 말함
+            var $this = $(this);
+            // tbody 바로 밑 tr 객체로 이동
+            var $tr = $this.closest('tr');
+
+            var id = $tr.find('input[name=id]').val();
+            var categoryName = $tr.find('input[name=categoryName]').val();
+            var sortValue = $tr.find('input[name=sortValue]').val();
+            var usingYn = $tr.find('input[type=checkbox]')[0].checked;
+
+            // console.log(id, categoryName, sortValue, usingYn); => f12 콘솔창에 나옴
+
+            $updateForm = $('form[name=updateForm]');
+
+            $updateForm.find('input[name=id]').val(id);
+            $updateForm.find('input[name=categoryName]').val(categoryName);
+            $updateForm.find('input[name=sortValue]').val(sortValue);
+            $updateForm.find('input[name=usingYn]').val(usingYn);
+            $updateForm.submit();
+          });
+    });
+  </script>
+</head>
+<body>
+
+  <h1>카테고리 관리</h1>
+  <div th:replace="/fragments/layout.html :: fragment-admin-body-menu"></div>
+
+
+  <div class="list">
+
+    <div>
+      <form method="post" action="/admin/category/add.do">
+        <input type="text" name="categoryName" required placeholder="카테고리명 입력"/>
+        <button type="submit">추가</button>
+      </form>
+    </div>
+
+    <!--<div th:text="${list}"></div> // 값이 다 나오는것 확인 가능-->
+
+    <table>
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>카테고리명</th>
+          <th>순서</th>
+          <th>사용여부</th>
+          <th>비고</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr th:each="x : ${list}">
+          <td th:text="${x.id}">
+            <input type="hidden" name="id" th:value="${x.id}"/>
+            <p th:text="${x.id}">1</p>
+          </td>
+          <!--
+          <td th:text="${x.categoryName}">김민지</td>
+          <td th:text="${x.sortValue}">010-1111-2222</td>
+          <td th:text="${x.usingYn}">2021.01.01</td>
+          -->
+          <!--수정 기능 추가하려면 아래와 같이 변경해야 함-->
+          <td>
+            <input th:value="${x.categoryName}" type="text" name="categoryName" />
+          </td>
+          <td>
+            <input th:value="${x.sortValue}" type="text" name="sortValue" />
+          </td>
+          <td>
+            <!--name이 서로 달라야함!!-->
+            <input th:checked="${x.usingYn}" type="checkbox" th:id="'usingYn_' + ${x.id}" th:name="'usingYn_'+ ${x.id}"  value="true"/>
+            <label th:for="'usingYn_' + ${x.id}">사용</label>
+          </td>
+
+          <td>
+            <div class="inline-div">
+              <button class="update-button" type="button">수정</button>
+            </div>
+            <!--카테고리를 삭제하시겠습니까? 확인 누르면 delete.do로 이동하도록!!!-->
+            <div class="inline-div">
+              <form name="deleteForm" method="post" action="/admin/category/delete.do">
+                <input type="hidden" name="id" th:value="${x.id}"/>
+                <button type="submit">삭제</button>
+              </form>
+            </div>
+          </td>
+        </tr>
+        <tr th:if="${#lists.size(list) < 1}"> <!--list가 없을 때만 나오도록-->
+          <td colspan="5">
+            <p class="nothing">내용이 없습니다.</p>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+      <div class="pager" th:utext="${pager}">
+
+      </div>
+
+  </div>
+
+  <form name="updateForm" method="post" action="/admin/category/update.do">
+    <input type="hidden" name="id"/>
+    <input type="hidden" name="categoryName"/>
+    <input type="hidden" name="sortValue"/>
+    <input type="hidden" name="usingYn"/>
+  </form>
+</body>
+</html>

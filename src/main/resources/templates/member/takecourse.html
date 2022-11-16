@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<!-- suggest 추천해주는걸 사용하기 위해 네임 스페이스 추가해야 함 -->
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>회원 정보</title>
+    <style> /*.은 클래스를 말함*/
+    .list table {
+        width: 100%;
+        border-collapse: collapse; /*간격 없앰*/
+    }
+    .list table th, .list table td {
+        border: solid 1px #000;
+    }
+    p.nothing {
+        text-align: center;
+        padding: 100px;
+    }
+    </style>
+
+    <script src="https://cdn.jsdelivr.net/npm/axios@1.1.2/dist/axios.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.1.min.js" integrity="sha256-o88AwQnZB+VDvE9tvIXrMQaPlFFSUTR+nldQm1LuPXQ=" crossorigin="anonymous"></script>
+    <script>
+        $(document).ready(function () {
+
+            $('.row-buttons button').on('click', function () {
+
+                var id = $(this).val();
+                // id = take_course 테이블에 1~5까지 아무 숫자 => id=3 으로 하고 수강 취소하면
+                // 본인 강의만 수강 취소 가능합니다가 뜬다
+
+                var msg = '수강취소 처리 하시겠습니까?';
+                if (!confirm(msg)) { // 취소 누르면
+                    return false;
+                }
+
+                // 아작스로 처리 => url, parameter 있어야 함
+                var url = '/api/member/course/cancel.api'; // member/controller/ApiMemberController 생성
+                // json 형태로
+                var parameter = {
+                    // takeCourseId 는 take_course 테이블의 id값을 말함
+                    takeCourseId: id
+                };
+
+                // alert('1'); 수강신청 버튼 누르면 1이 뜸
+                /*post는 url로 parameter를 전송*/
+                axios .post(url, parameter).then(function(response) {
+                    console.log(response);
+                    console.log(response.data);
+
+                    // 문제가 있을 수 있으니 {} 객체로 싸줌
+                    response.data = response.data || {};
+                    response.data.header = response.data.header || {};
+
+                    if (!response.data.header.result) {
+                        alert(response.data.header.message);
+                        return false;
+                    }
+
+                    // 정상적일 때
+                    alert('강좌가 취소되었습니다.');
+                    location.reload();
+
+                }).catch(function (err) {
+                    console.log(err);
+                });
+
+                return false;
+            });
+
+        });
+    </script>
+</head>
+<body>
+
+        <h1>회원 정보</h1>
+        <div th:replace="/fragments/layout.html :: fragment-body-menu"></div>
+
+        <div>
+            <hr/>
+            <a href="/member/info">회원 정보 수정</a>
+            |
+            <a href="/member/password">비밀번호 변경</a>
+            |
+            <a href="/member/takecouse">내 수강 목록</a>
+            </hr>
+        </div>
+
+        <div class="list"> <!--css 주기 위한 클래스 이름 정의-->
+            <table>
+                <thead>
+                <tr>
+                    <th>NO</th>
+                    <th>등록일</th>
+                    <th>강좌명</th>
+                    <th>상태</th>
+                    <th>비고</th>
+                </tr>
+                </thead>
+                <tbody id="dataList">
+                <tr th:each="x, i: ${list}">
+                    <td th:text="${i.index + 1}">1
+                    </td>
+                    <td>
+                        <p th:text="${x.regDtText}">2021.01.01</p>
+                    </td>
+                    <td><!--같은 경로에 있으므로 /admin/course 생략 가능함-->
+                        <p th:text="${x.subject}">강좌명</p>
+                    </td>
+                    <td>
+                        <p th:if="${x.status eq 'REQ'}">수강신청</p>
+                        <p th:if="${x.status eq 'COMPLETE'}">결재완료</p>
+                        <p th:if="${x.status eq 'CANCEL'}">수강취소</p>
+                    </td>
+                    <td>
+                        <!--버튼인 웹에서 반복되므로 버튼을 구분하는 클래스를 줘야 함-->
+                        <div class="row-buttons" th:if="${x.status eq 'REQ'}">
+                            <button type="button" th:value="${x.id}">수강취소 처리</button> <!--보안 이슈 때문에 value="CANCEL" 뻈음 -> 사용자에서는-->
+                        </div>
+                    </td>
+                </tr>
+
+                </tbody>
+            </table>
+        </div>
+
+        <!--<div th:text="${list}"></div> 전체 내용 잘 나옴-->
+</body>
+</html>

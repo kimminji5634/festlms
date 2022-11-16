@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<!-- suggest 추천해주는걸 사용하기 위해 네임 스페이스 추가해야 함 -->
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>관리자 화면</title>
+  <style> /*.은 클래스를 말함*/
+    .list table {
+        width: 100%;
+        border-collapse: collapse; /*간격 없앰*/
+    }
+    .list table th, .list table td {
+        border: solid 1px #000;
+    }
+
+    .search-form {
+        position: relative;
+        padding: 5px 0 10px 0;
+        text-align: right;
+    }
+    .search-form .total-count {
+        position: absolute;
+        left: 0; top: 0;
+        height: 20px;
+        float : left;
+    }
+    .pager { /*페이지 번호*/
+        margin-top: 20px;
+        text-align: center;
+    }
+    /*선택한 페이지 빨간색으로*/
+    .pager a.on {
+        font-weight: bold;
+        color: red;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>관리자 회원 관리</h1>
+  <div th:replace="/fragments/layout.html :: fragment-admin-body-menu"></div>
+  <!--<div>
+    <a href="/admin/main.do">관리자 메인</a>
+    |
+    <a href="/admin/member/list.do">회원 관리</a>
+    |
+    <a href="#">카테고리 관리</a>
+    |
+    <a href="#">강의 관리</a>
+    |
+    <a href="/member/logout">로그아웃</a>
+    <br/> &lt;!&ndash;줄바꿈&ndash;&gt;
+    <hr/>
+  </div>-->
+
+  <div class="list">
+
+      <!-- 내가 검색한 내용 type 과 value 가 출력됨
+      <div th:text="${param.searchType}"></div>
+      <div th:text="${param.searchValue}"></div>
+      -->
+
+      <div class="search-form">
+          <p class="total-count">전체<span th:text="${totalCount}"></span>개</p>
+          <form method="get"> <!--웹에서 검색버튼 누르면 파라미터 바뀌는거 볼 수 있음-->
+              <select name="searchType">
+                  <option value="all">전체</option>
+                  <option value="userId">아이디</option>
+                  <option value="userName">이름</option>
+                  <option value="phone">연락처</option>
+              </select>
+              <!--param. 사용하니 검색 버튼 눌러도 데이터가 떠 있음-->
+              <input th:value="${param.searchValue}" type="search" name="searchValue" placeholder="검색어 입력"/>
+              <button type="submit">검색</button>
+          </form>
+      </div>
+
+    <table>
+      <thead>
+        <tr>
+          <th>No</th>
+          <th>아이디(이메일)</th>
+          <th>이름</th>
+          <th>연락처</th>
+          <th>이메일 인증 여부</th>
+          <th>가입일</th>
+          <th>관리자 여부</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr th:each="x : ${list}">
+            <td th:text="${x.seq}"></td>
+            <td>
+                <a th:text="${x.userId}"
+                   th:href="${'detail.do?userId=' + x.userId}">alslalswl501@gmail.com</a>
+            </td>
+            <td th:text="${x.userName}">김민지</td>
+            <td th:text="${x.phone}">010-1111-2222</td>
+            <td>
+                <p th:if="${x.emailAuthYn}">Y</p>
+                <p th:if="${x.emailAuthYn eq false}">N</p>
+            </td>
+            <td>
+              <p th:text="${x.regDt}">2021.01.01</p>
+            </td>
+            <td>
+              <p th:if="${x.adminYn}">Y</p>
+              <p th:if="${x.adminYn eq false}">N</p>
+            </td>
+        </tr>
+      </tbody>
+    </table>
+
+      <!--페이징 처리 해줌-->
+      <div class="pager" th:utext="${pager}"> </div>
+
+  </div>
+
+</body>
+</html>

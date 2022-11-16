@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>회원 가입</title>
+
+</head>
+<body>
+    <h1>회원 가입</h1>
+    <div th:replace="/fragments/layout.html :: fragment-body-menu"></div>
+  <!--아이디(이메일), 이름, 전화번호, 비밀번호-->
+  <!--웹에서 입력한 데이터를 서버로 보내야됨-->
+  <!--데이터를 서버로 보내는 2가지 조건 : 폼 태그로 감싸져 있어야 함, name 을 가지고 있어야 함-->
+  <!--form, name 해주니 웹 주소 파라미터 뒤에 값들이 붙어서 넘어감 => get방식 -->
+  <!--개인정보 같은 민감한 값들에 대해서는 get 방식이 아닌 post 방식을 사용해서 보내야 함-->
+  <!--deport는 get임 post 쓰고자 할떄는 아래와 같이 method 이용-->
+  <!--required는 필수값으로 꼭 입력이 돼야 서버로 넘어감-->
+    <form method="post">
+        <div>
+        <input type="email" name="userId" placeholder="아이디(이메일) 입력" required/>
+        </div>
+        <div>
+        <input type="text" name="userName" placeholder="이름 입력" required/>
+        </div>
+        <div>
+            <input type="tel" name="phone" placeholder="전화번호 입력" required/>
+        </div>
+        <div>
+        <input type="password" name="password" placeholder="비밀번호 입력" required/>
+        </div>
+        <div>
+            <input type="password" name="rePassword" placeholder="비밀번호 확인" required/>
+        </div>
+        <div>
+            <button>회원 가입 하기</button>
+        </div>
+    </form>
+
+</body>
+</html>
