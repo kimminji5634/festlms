@@ -12,6 +12,13 @@
     .detail table th, .detail table td {
       border: solid 1px #000;
     }
+    .detail2 table {
+      width: 100%;
+      border-collapse: collapse; /*간격 없앰*/
+    }
+    .detail2 table th, .detail2 table td {
+      border: solid 1px #000;
+    }
   </style>
 </head>
 <body>
@@ -111,6 +118,30 @@
 
         </div>
       </div>
+
+      <!--<div th:text="${loginHistory}"></div>--> <!--이게 list형이므로 하나씩 나오게 해줘야 하나보다 => 맞다-->
+
+      <div class="detail2">
+        <table>
+          <thead>
+          <tr>
+            <th>No</th>
+            <th>로그인 일자</th>
+            <th>접속 IP</th>
+            <th>접속 UserAgent</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr th:each="x : ${loginHistory}">
+            <td th:text="${x.no}"></td>
+            <td th:text="${x.loginDt}"></td>
+            <td th:text="${x.ip}"></td>
+            <td th:text="${x.userAgent}"></td>
+          </tr>
+          </tbody>
+        </table>
+    </div>
+
 
 </body>
 </html>

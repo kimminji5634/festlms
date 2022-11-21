@@ -54,6 +54,8 @@ public class CourseServiceImpl implements CourseService{
                  .salePrice(parameter.getSalePrice())
                  .saleEndDt(saleEndDt)
                  .regDt(LocalDateTime.now())
+                 .filename(parameter.getFilename())
+                 .urlFilename(parameter.getUrlFilename())
                  .build();
          courseRepository.save(course);
 
@@ -81,6 +83,8 @@ public class CourseServiceImpl implements CourseService{
         course.setSalePrice(parameter.getSalePrice());
         course.setSaleEndDt(saleEndDt);
         course.setUptDt(LocalDateTime.now());
+        course.setFilename(parameter.getFilename());
+        course.setUrlFilename(parameter.getUrlFilename());
         courseRepository.save(course);
 
         return true;
@@ -206,5 +210,12 @@ public class CourseServiceImpl implements CourseService{
         result.setMessage("");
 
         return result;
+    }
+
+    @Override
+    public List<CourseDto> listAll() {
+
+        List<Course> courseList = courseRepository.findAll();
+        return CourseDto.of(courseList);
     }
 }

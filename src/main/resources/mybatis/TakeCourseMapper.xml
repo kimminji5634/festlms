@@ -8,6 +8,10 @@
     <!--공통된 코드 상속받아 쓰기-->
     <sql id="selectListWhere">
 
+        <if test="searchCourseId > 0">
+            and c.id = #{searchCourseId} <!--course id와 searchCourseId가 같은 것만-->
+        </if>
+
     </sql>
 
     <!--parameterType 변경!!!-->
@@ -15,8 +19,11 @@
     <!--테이블 변경해야함-->
     <select id="selectListCount" resultType="long">
         select count(*)
-        from take_course
+        from take_course tc
+            join course c on tc.course_id = c.id
+            join member m on tc.user_id = m.user_id
         where 1 = 1
+        <include refid="selectListWhere"/>
         <include refid="selectListWhere"/>
     </select>
 

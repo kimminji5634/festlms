@@ -1,6 +1,7 @@
 package com.zerobase.fastlms.member.service;
 
 
+import com.zerobase.fastlms.admin.dto.LoginHistoryDto;
 import com.zerobase.fastlms.admin.dto.MemberDto;
 import com.zerobase.fastlms.admin.model.MemberParam;
 import com.zerobase.fastlms.course.model.ServiceResult;
@@ -8,10 +9,11 @@ import com.zerobase.fastlms.member.model.MemberInput;
 import com.zerobase.fastlms.member.model.ResetPasswordInput;
 import org.springframework.security.core.userdetails.UserDetailsService;
 
-import javax.naming.directory.SearchResult;
 import java.util.List;
 
 public interface MemberService extends UserDetailsService { // service는 하나의 트랜잭션을 처리하는 단위
+
+    boolean login(String userId, String password);
 
     boolean register(MemberInput parameter);
 
@@ -46,4 +48,7 @@ public interface MemberService extends UserDetailsService { // service는 하나
 
     // 회원 정보 수정
     ServiceResult updateMember(MemberInput parameter);
+
+    // 회원을 탈퇴 시켜주는 로직
+    ServiceResult withdraw(String userId, String password);
 }

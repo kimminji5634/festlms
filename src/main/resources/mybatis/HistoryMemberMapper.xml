@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zerobase.fastlms.admin.mapper.HistoryMemberMapper">
+
+
+    <!--select는 parameterType 중요하지 않아서 지워도 에러 안남-->
+    <select id="selectListCount" resultType="long">
+        select count(*)
+        from login_history lh
+        join member m on lh.user_id = m.user_id
+        where 1 = 1
+
+    </select>
+
+    <select id="selectList" resultType="com.zerobase.fastlms.admin.dto.LoginHistoryDto">
+        select lh.*
+        from login_history lh
+        join member m on lh.user_id = m.user_id
+        where 1 = 1
+        order by no desc
+
+        limit #{pageStart}, #{pageEnd}
+    </select>
+</mapper>

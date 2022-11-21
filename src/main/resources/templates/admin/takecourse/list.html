@@ -56,6 +56,14 @@
   <script>
     $(document).ready(function () {
 
+      $('#searchCourseId').on('change', function () {
+
+          var id = $(this).val(); // id = courseId 의 value 값을 id로 잡음 => course 테이블의 id값임!!
+
+          location.href = '?searchCourseId=' + id;
+      });
+
+
       $('.row-buttons button').on('click', function () {
 
         // 결제완료 처리 버튼을 누르면 complete, 수강취소 처리 버튼을 누르면 cancel이 뜬다
@@ -84,12 +92,22 @@
 </head>
 <body>
 
-  <h1>수강 관리</h1>
   <div th:replace="/fragments/layout.html :: fragment-admin-body-menu"></div>
+  <h1>수강 관리</h1>
+
 
   <div class="list">
 
     <div class="buttons">
+
+      <select id="searchCourseId"> <!--여러 강좌중 강좌를 선택할 때 위에 script 태그에서 이벤트 발생시키기 위해 id값 줌-->
+        <option value="">전체 강좌</option>
+        <!--th:selected 강좌 선택시 그 강좌가 선택됨-->
+        <option th:each="x : ${courseList}"
+                th:selected = "${#strings.equals(param.searchCourseId, x.id)}"
+                th:value="${x.id}" th:text="${x.subject}">자바 프로그래밍</option>
+      </select>
+
       <p class="total-count">전체 <span th:text="${totalCount}"></span>개</p> <!--전체 갯수 구하기-->
       <!--<a href="/admin/course/add.do">강좌 등록</a>
       <button id="deleteButton" type="button"> 선택 삭제 </button>-->
@@ -145,12 +163,17 @@
           </div>
         </td>
       </tr>
-
+      <!--내용이 없는경우 내용이 없습니다 띄우기-->
+      <tr th:if="${#lists.size(list) < 1}"> <!--list가 없을 때만 나오도록-->
+        <td colspan="8">
+          <p class="nothing">내용이 없습니다.</p>
+        </td>
+      </tr>
       </tbody>
     </table>
 
   <!--페이징 처리 해줌-->
-  <div class="pager" th:utext="${pager}"> </div>
+  <div class="pager" th:if="${#lists.size(list) > 0}" th:utext="${pager}"> </div>
   </div>
 
   <!--status 를 변경하는 submit 폼 생성-->

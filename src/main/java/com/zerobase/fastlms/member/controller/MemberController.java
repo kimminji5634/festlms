@@ -12,7 +12,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -25,12 +24,54 @@ public class MemberController {
     private final MemberService memberService;
     private final TakeCourseService takeCourseService;
 
-    // RequestMapping 은 get, post 둘다 기능함
-    @RequestMapping("/member/login") // get은 화면을 내려줌
+
+    @GetMapping("/member/login")
     public String login() {
 
         return "member/login";
     }
+
+   /* @PostMapping("/member/login") // post는 버튼 클릭시 입력받은 데이터를 서버로 전달
+    public String loginSubmit(Model model, // model 쓰기 위해 model 주입 받는다
+                                 HttpServletRequest request,
+                                 HttpServletResponse response,
+                                 MemberInput parameter,
+                                 Principal principal) { *//*회원 정보를 가져오기 위해 Principal 의존성 주입*//*
+
+
+        String userId = principal.getName();
+
+        // 비밀번호가 일치하면 회원 탈퇴 시킴
+        boolean result = memberService.login(userId, parameter.getPassword());
+        model.addAttribute("result", result);*/
+
+        //*아래 두줄이 있어야만 로그인이 제대로 된다*//*
+        //String userId = principal.getName();
+
+        //String userId = parameter.getUserId();
+        //String password = parameter.getPassword();
+       /* String userId = principal.getName(); //아이디
+
+        Boolean result = memberService.login(userId);
+        model.addAttribute("result", result);*/
+
+        /*boolean result = memberService.login(parameter);
+        model.addAttribute("result", result);*/
+/*
+
+        return "redirect:/";
+    }
+*/
+
+
+    /*@PostMapping("/member/login")
+    public String loginSubmit(Model model
+            , MemberInput parameter) {
+
+       memberService.login(parameter);
+
+        return "member/login_complete";
+    }*/
 
     @GetMapping("/member/find/password")
     public String findPassword() {
@@ -71,7 +112,6 @@ public class MemberController {
                                  MemberInput parameter) {
 
         boolean result = memberService.register(parameter);
-
         model.addAttribute("result", result);
 
         return "member/register_complete";
@@ -201,5 +241,31 @@ public class MemberController {
 
         // model => 아래 html에서 사용
         return "member/reset_password_result";
+    }
+
+    @GetMapping("/member/withdraw")
+    public String memberWithdraw(Model model) {
+
+        return "member/withdraw";
+    }
+
+    @PostMapping("/member/withdraw")
+    public String memberWithdrawSubmit(Model model
+            , MemberInput parameter /*MemberInput을 통해 패스워드 받음*/
+                                       /*받을 수 있는 조건! withdraw.html 에서 name=password 로 받음*/
+            , Principal principal) { /*회원 정보를 가져오기 위해 Principal 의존성 주입*/
+
+        // 로그인한 세션으로부터 회원정보 가져오기
+        String userId = principal.getName();
+
+        // 비밀번호가 일치하면 회원 탈퇴 시킴
+        ServiceResult result = memberService.withdraw(userId, parameter.getPassword());
+        if (!result.isResult()) { //result가 정상적이 아니면
+            model.addAttribute("message", result.getMessage());
+            return "common/error";
+        }
+
+        // 로그아웃 시켜줘야 함
+        return "redirect:/member/logout";
     }
 }

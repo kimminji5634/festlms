@@ -1,11 +1,13 @@
 package com.zerobase.fastlms.admin.controller;
 
+import com.zerobase.fastlms.admin.dto.LoginHistoryDto;
 import com.zerobase.fastlms.admin.dto.MemberDto;
-import com.zerobase.fastlms.admin.model.MemberParam;
 import com.zerobase.fastlms.admin.model.MemberInput;
+import com.zerobase.fastlms.admin.model.MemberParam;
 import com.zerobase.fastlms.course.controller.BaseController;
+import com.zerobase.fastlms.member.entity.LoginHistory;
+import com.zerobase.fastlms.member.service.LoginHistoryService;
 import com.zerobase.fastlms.member.service.MemberService;
-import com.zerobase.fastlms.util.PageUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -14,11 +16,13 @@ import org.springframework.web.bind.annotation.PostMapping;
 
 import java.util.List;
 
+
 @RequiredArgsConstructor
 @Controller
 public class AdminMemberController extends BaseController {
 
     private final MemberService memberService;
+    private final LoginHistoryService loginHistoryService;
 
     /*MemberParam으로 넘어온 이 변수들에 대해 자동으로 매핑 해줌*/
     @GetMapping("/admin/member/list.do")
@@ -48,18 +52,24 @@ public class AdminMemberController extends BaseController {
         parameter.init(); // parameter쓰기 전 유효한지 확인
 
         MemberDto member = memberService.detail(parameter.getUserId());
+        //LoginHistoryDto loginHistory = loginHistoryService.loginHistoryDetail(parameter.getUserId());
         model.addAttribute("member", member);
+        //model.addAttribute("loginHistory", loginHistory);
+
+        List<LoginHistoryDto> loginHistory = loginHistoryService.list(parameter);
+        model.addAttribute("loginHistory", loginHistory);
 
         return "admin/member/detail"; // 이 뷰!!!
     }
 
-    @PostMapping("/admin/member/status.do")
+    @PostMapping("/admin/member/detail.do")
     public String status(Model model, MemberInput parameter) {
         boolean result =
-                    memberService.updateStatus(parameter.getUserId(), parameter.getUserStatus());
+                memberService.updateStatus(parameter.getUserId(), parameter.getUserStatus());
 
         return "redirect:/admin/member/detail.do?userId=" + parameter.getUserId();
     }
+
 
     @PostMapping("/admin/member/password.do")
     public String password(Model model, MemberInput parameter) {

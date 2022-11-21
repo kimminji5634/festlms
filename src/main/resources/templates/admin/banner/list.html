@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<!-- suggest 추천해주는걸 사용하기 위해 네임 스페이스 추가해야 함 -->
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>관리자 화면</title>
+  <style> /*.은 클래스를 말함*/
+  .list table {
+    width: 100%;
+    border-collapse: collapse; /*간격 없앰*/
+  }
+  .list table th, .list table td {
+    border: solid 1px #000;
+  }
+  p.nothing {
+    text-align: center;
+    padding: 100px;
+  }
+  .pager { /*페이지 번호 가운데*/
+    margin-top: 20px;
+    text-align: center;
+  }
+  /*선택한 페이지 빨간색으로*/
+  .pager a.on {
+    font-weight: bold;
+    color: red;
+  }
+  .list .buttons {
+    position: relative;
+    padding: 10px 0;
+  }
+  .list .buttons .total-count {
+    position: absolute;
+    top: 0;
+    right: 0;
+  }
+  .list .buttons a, .list .buttons button {
+    border-width: 0;
+    background-color: transparent;
+    text-decoration: underline;
+    font-size: 14px;
+    line-height: 20px;
+    height: 20px;
+    color: #000;
+    cursor: pointer;
+  }
+
+  </style>
+
+  <script src="https://code.jquery.com/jquery-3.6.1.min.js" integrity="sha256-o88AwQnZB+VDvE9tvIXrMQaPlFFSUTR+nldQm1LuPXQ=" crossorigin="anonymous"></script>
+  <script>
+    $(document).ready(function () {
+
+      $('#selectAll').on('click', function () {
+
+        var checked = $(this).is(':checked');
+        // alert(checked); /*전체 누르면 true, 해제하면 false 뜨는 거 볼 수 있음*/
+
+        /*아래 코드를 추가하므로 전체 선택 가능해짐 => 적용은 페이지에 따라 적용됨*/
+        $('#dataList input[type=checkbox]').each(function (k, v) {
+          $(this).prop('checked', checked);
+        });
+
+      });
+
+      $('#deleteButton').on('click', function () {
+
+        // table 전체 적용 -> var $checked = $('table input[type=checkbox]:checked')
+        /*강사님도 jquery checkbox checked 구글에 쳐서 적용하심*/
+        var $checked = $('#dataList input[type=checkbox]:checked')
+        //console.log($checked.length); /*체크박스 체크 후 삭제 누르고 개발자 도구 콘솔보면 하나 삭제할 때 길이 1 출력*/
+
+        if ($checked.length < 1) { // 삭제해달라고 체크박스에 표시된 거 없는 경우
+          alert('삭제할 데이터를 선택해 주세요.');
+          return false;
+        }
+
+        if(!confirm('선택한 데이터를 삭제하시겠습니까?')) { // 삭제 전 한번더 물어보기
+          return false;
+        }
+
+        var idList = [];
+        $.each($checked, function (k, v) { // key -> NO
+          //console.log($(this).val()); /*삭제한 행에 해당되는 NO 출력됨*/
+          idList.push($(this).val()); // 배열로 삭제할 것에 해당되는 NO 나옴
+        });
+
+        console.log(idList);
+        console.log(idList.join(',')); /*배열을 문자단위로 바꿈 => , 단위로 조인됨*/
+
+        var $deleteForm = $('form[name=deleteForm]');
+        $deleteForm.find('input[name=idList]').val(idList.join(','));
+        $deleteForm.submit();
+
+    });
+
+    });
+  </script>
+</head>
+<body>
+
+  <h1>배너 관리</h1>
+  <div th:replace="/fragments/layout.html :: fragment-admin-body-menu"></div>
+
+  <div class="list">
+
+    <div class="buttons">
+      <p class="total-count">전체 <span th:text="${totalCount}"></span>개</p> <!--전체 갯수 구하기-->
+        <a href="/banner/add.do">배너 등록</a>
+      <button id="deleteButton" type="button"> 선택 삭제 </button>
+    </div>
+
+    <table>
+      <thead>
+        <tr>
+          <th> <!--전체 삭제 체크박스 한번에 누르기 위해 id="selectAll" 추가함-->
+              <input id="selectAll" type="checkbox" />
+          </th>
+          <th>NO</th>
+          <th>배너명</th>
+          <th>이미지</th>
+          <th>등록일</th>
+        </tr>
+      </thead>
+      <tbody id="dataList">
+
+      <tr th:each="x : ${list}">
+        <td>
+          <input type="checkbox" th:value="${x.no}"/>
+        </td>
+        <td th:text="${x.seq}">1</td>
+        <td><!--같은 경로에 있으므로 /admin/course 생략 가능함-->
+          <p>
+            <a th:text="${x.bannerName}">배너명</a>
+          </p>
+        </td>
+        <td><!--같은 경로에 있으므로 /admin/course 생략 가능함-->
+          <p>
+            <a th:text="${x.filename}">배너명</a>
+          </p>
+        </td>
+        <td>
+          <p th:text="${x.regDt}">2021.01.01</p>
+        </td>
+      </tr>
+
+      </tbody>
+    </table>
+
+  <!--페이징 처리 해줌-->
+  <div class="pager" th:utext="${pager}"> </div>
+  </div>
+
+  <!--삭제기능을 위한 form => 웹에서 삭제 체크박스 체크하고 삭제하기 누르면 delete.do로 이동-->
+  <form name="deleteForm" method="post" action="/admin/banner/delete.do">
+    <input type="hidden" name="idList"/>
+  </form>
+
+</body>
+</html>

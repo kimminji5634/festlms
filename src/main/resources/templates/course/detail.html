@@ -78,6 +78,10 @@
             </div>
 
             <div>
+                <img th:src="${detail.urlFilename}" />
+            </div>
+
+            <div>
                 <form id="submitForm" method="post"> <!--이 post 메소드에 대해서 위에서 구현해주기 위해 id 넣음-->
                 <input type="hidden" name="id" th:value="${detail.id}"/> <!--강좌 id만 서버로 보내면 됨-->
                 <button type="submit">수강신청</button>

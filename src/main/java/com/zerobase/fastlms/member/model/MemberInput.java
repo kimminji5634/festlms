@@ -18,4 +18,8 @@ public class MemberInput {
     private String addr;
     private String addrDetail;
 
+
+
+
+
 }

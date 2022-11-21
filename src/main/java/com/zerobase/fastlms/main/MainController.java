@@ -13,19 +13,19 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @Controller
 public class MainController {
     private final MailComponents mailComponents;
-
-    @RequestMapping ("/") // 요청에 대한 매핑을 해주겠다
+    //**컨트롤러 주소 다르게 요청되어야 한다 똑같은거 못쓴다!!!
+   /* @RequestMapping ("/") // 요청에 대한 매핑을 해주겠다
     public String index() {
 
-        /* 사용하지 않을 것이므로 주석 처리!
+        //* 사용하지 않을 것이므로 주석 처리!
         String email = "kimminji5634@gmail.com";
         String subject = "안녕하세요. 제로베이스 입니다.";
         String text = "<p>안녕하세요.</p><p>반갑습니다.</p>";
 
-        mailComponents.sendMail(email, subject, text);*/
+        mailComponents.sendMail(email, subject, text);//*
 
         return "index"; // index.html 파일을 리턴함
-    }
+    }*/
 
     @RequestMapping ("/error/denied")
     public String errorDenied() {

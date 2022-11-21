@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<!-- suggest 추천해주는걸 사용하기 위해 네임 스페이스 추가해야 함 -->
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>회원 정보</title>
+
+</head>
+<body>
+
+        <h1>회원 탈퇴</h1>
+        <div th:replace="/fragments/layout.html :: fragment-body-menu"></div>
+
+        <div>
+            <a href="/member/info">회원 정보 수정</a>
+            |
+            <a href="/member/password">비밀번호 변경</a>
+            |
+            <a href="/member/takecouse">내 수강 목록</a>
+            </hr>
+        </div>
+
+        <div>
+            <p>
+                회원 탈퇴를 하면 서비스를 더이상 이용하실 수 없습니다.
+                <br/> <!--개행-->
+                회원 탈퇴를 진행하시겠습니까?
+            </p>
+
+            <!--더이상 물어보지 않아도 되므로 바로 서버로 데이터 날림 됌 -> 위에서 자바스크립트로 아래를 잡을 필요 없다-->
+            <form id="submitForm" method="post">
+            <div>
+                <input type="password" name="password" placeholder="현재 비밀번호 입력" required/>
+            </div>
+
+                <div>
+                    <button type="submit">회원 탈퇴 하기</button>
+                </div>
+            </form>
+        </div>
+
+        <!--<div th:text="${detail}"></div> 전체 내용 출력-->
+</body>
+</html>

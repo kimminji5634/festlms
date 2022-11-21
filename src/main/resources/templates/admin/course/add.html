@@ -51,7 +51,7 @@
   <div class="detail">
 
     <!--form submit 전 데이터를 갱신하자-->
-    <form id = "submitForm" method="post"> <!--강좌 등록 버튼 누르면 값을 post-->
+    <form id = "submitForm" method="post" enctype="multipart/form-data"> <!--강좌 등록 버튼 누르면 값을 post-->
 
       <table>
         <tbody>
@@ -120,6 +120,12 @@
              <input th:value="${detail.saleEndDt}" type="text" name="saleEndDtText"  placeholder="할인 종료일 입력" />
            </td>
          </tr>
+        <tr>
+          <th>첨부 파일</th>
+          <td>
+            <input type="file" name="file" /> <!--name이 있어야만 서버로 전송가능-->
+          </td>
+        </tr>
 
         </tbody>
       </table>
